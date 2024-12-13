@@ -1,12 +1,13 @@
 import { Client } from "@stomp/stompjs";
 import React, { useEffect, useRef, useState } from "react";
 import SockJS from "sockjs-client";
+import SideBar from "../components/SideBar"; // Assure-toi que le chemin est correct
 
 const ChatPage = () => {
   const [messages, setMessages] = useState([]);
   const [messageContent, setMessageContent] = useState("");
-  const stompClientRef = useRef(null); // Reference to store the Stomp client
-  const subscriptionRef = useRef(null); // Reference to store the subscription
+  const stompClientRef = useRef(null);
+  const subscriptionRef = useRef(null);
   const chatId = 9;
 
   useEffect(() => {
@@ -18,13 +19,9 @@ const ChatPage = () => {
       webSocketFactory: () => socket,
       onConnect: () => {
         console.log("Connected to WebSocket");
-
-        // Unsubscribe if already subscribed to avoid duplicates
         if (subscriptionRef.current) {
           subscriptionRef.current.unsubscribe();
         }
-
-        // Subscribe to the chat topic
         subscriptionRef.current = client.subscribe(
           `/topic/messages/${chatId}`,
           (message) => {
@@ -46,19 +43,18 @@ const ChatPage = () => {
       },
       onDisconnect: () => {
         console.log("Disconnected from WebSocket");
-        subscriptionRef.current = null; // Clear subscription reference
+        subscriptionRef.current = null;
       },
     });
 
     client.activate();
     stompClientRef.current = client;
 
-    // Cleanup function
     return () => {
       if (client.connected) {
         client.deactivate();
       }
-      subscriptionRef.current = null; // Clear subscription on unmount
+      subscriptionRef.current = null;
     };
   }, [chatId]);
 
@@ -90,29 +86,45 @@ const ChatPage = () => {
   };
 
   return (
-    <div>
-      {/* Chat UI Code */}
-      <h2>Chat Room</h2>
-      <div
-        style={{
-          border: "1px solid #ccc",
-          height: "300px",
-          overflowY: "scroll",
-        }}
-      >
-        {messages.map((msg, index) => (
-          <div key={index}>
-            <strong>{msg.senderId}:</strong> {msg.content}
+    <div className="h-screen flex">
+      {/* Side bar */}
+      <SideBar /> {/* Le composant SideBar est maintenant utilisé ici */}
+      {/* Main Content */}
+      <div className="flex flex-col flex-grow">
+        {/* Header */}
+        <header className="bg-[#DBE2EF] text-white p-4">
+          <h1 className="text-lg font-semibold">Chat Application</h1>
+        </header>
+
+        {/* Main Section */}
+        <main className="flex-grow bg-gray-100 p-4">
+          <div className="bg-white shadow-md rounded p-4">
+            <h2 className="text-xl font-bold mb-4">Chat Room</h2>
+            <div className="border border-gray-300 h-64 overflow-y-scroll p-2 mb-4">
+              {messages.map((msg, index) => (
+                <div key={index} className="mb-2">
+                  <strong>{msg.senderId}:</strong> {msg.content}
+                </div>
+              ))}
+            </div>
+            <div className="flex">
+              <input
+                type="text"
+                value={messageContent}
+                onChange={(e) => setMessageContent(e.target.value)}
+                placeholder="Type a message"
+                className="flex-grow border border-gray-300 rounded-l p-2"
+              />
+              <button
+                onClick={sendMessage}
+                className="bg-blue-600 text-white px-4 rounded-r"
+              >
+                Send
+              </button>
+            </div>
           </div>
-        ))}
+        </main>
       </div>
-      <input
-        type="text"
-        value={messageContent}
-        onChange={(e) => setMessageContent(e.target.value)}
-        placeholder="Type a message"
-      />
-      <button onClick={sendMessage}>Send</button>
     </div>
   );
 };
