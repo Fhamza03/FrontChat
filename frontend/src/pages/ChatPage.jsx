@@ -1,16 +1,36 @@
 import { Client } from "@stomp/stompjs";
 import React, { useEffect, useRef, useState } from "react";
 import SockJS from "sockjs-client";
-import SideBar from "../components/SideBar"; // Assure-toi que le chemin est correct
+import { useParams } from "react-router-dom";
+import SideBar from "../components/SideBar";
 
 const ChatPage = () => {
+  const { chatId } = useParams(); // Retrieve chatId from the URL
   const [messages, setMessages] = useState([]);
   const [messageContent, setMessageContent] = useState("");
-  const stompClientRef = useRef(null);
-  const subscriptionRef = useRef(null);
-  const chatId = 9;
+  const stompClientRef = useRef(null); // Reference to store the Stomp client
+  const subscriptionRef = useRef(null); // Reference to store the subscription
+  const messagesEndRef = useRef(null); // Ref for scrolling to the bottom
 
   useEffect(() => {
+    if (!chatId) return; // Ensure chatId is defined
+
+    // Fetch existing messages for the chat from the backend
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/getMessages/${chatId}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch messages");
+        }
+        const fetchedMessages = await response.json();
+        setMessages(fetchedMessages);
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    };
+
+    fetchMessages();
+
     const socket = new SockJS("http://localhost:8080/ws", null, {
       withCredentials: true,
     });
@@ -19,46 +39,48 @@ const ChatPage = () => {
       webSocketFactory: () => socket,
       onConnect: () => {
         console.log("Connected to WebSocket");
+
         if (subscriptionRef.current) {
           subscriptionRef.current.unsubscribe();
         }
+
+        // Subscribe to the specific chat topic
         subscriptionRef.current = client.subscribe(
           `/topic/messages/${chatId}`,
           (message) => {
-            if (message.body.startsWith("{") && message.body.endsWith("}")) {
-              try {
-                const receivedMessage = JSON.parse(message.body);
-                setMessages((prevMessages) => [
-                  ...prevMessages,
-                  receivedMessage,
-                ]);
-              } catch (error) {
-                console.error("Error parsing message:", message.body, error);
-              }
-            } else {
-              console.warn("Received non-JSON message:", message.body);
+            try {
+              const receivedMessage = JSON.parse(message.body);
+              setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+            } catch (error) {
+              console.error("Error parsing message:", message.body, error);
             }
           }
         );
       },
       onDisconnect: () => {
         console.log("Disconnected from WebSocket");
-        subscriptionRef.current = null;
+        subscriptionRef.current = null; // Clear subscription reference
       },
     });
 
     client.activate();
     stompClientRef.current = client;
 
+    // Cleanup function
     return () => {
       if (client.connected) {
         client.deactivate();
       }
-      subscriptionRef.current = null;
+      subscriptionRef.current = null; // Clear subscription on unmount
     };
   }, [chatId]);
 
-  const sendMessage = () => {
+  useEffect(() => {
+    // Scroll to the latest message when messages are updated
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const sendMessage = async () => {
     if (!stompClientRef.current || !stompClientRef.current.connected) {
       console.error("WebSocket client is not connected.");
       return;
@@ -70,25 +92,30 @@ const ChatPage = () => {
       return;
     }
 
-    const payload = {
+    const newMessage = {
       senderId,
-      chatId,
+      chatId: parseInt(chatId, 10),
       content: messageContent.trim(),
     };
 
-    console.log("Sending message:", payload);
-    stompClientRef.current.publish({
-      destination: "/app/chat.sendMessage",
-      body: JSON.stringify(payload),
-    });
+    try {
+      // Send the message to the backend via WebSocket
+      stompClientRef.current.publish({
+        destination: "/app/chat.sendMessage",
+        body: JSON.stringify(newMessage),
+      });
 
-    setMessageContent("");
+      setMessageContent(""); // Clear the input field after sending the message
+    } catch (error) {
+      console.error("Error sending message:", error);
+      // Optionally, handle the error by removing the optimistically added message if the request fails
+    }
   };
 
   return (
     <div className="h-screen flex">
       {/* Side bar */}
-      <SideBar /> {/* Le composant SideBar est maintenant utilisé ici */}
+      <SideBar />
       {/* Main Content */}
       <div className="flex flex-col flex-grow">
         {/* Header */}
@@ -106,6 +133,8 @@ const ChatPage = () => {
                   <strong>{msg.senderId}:</strong> {msg.content}
                 </div>
               ))}
+              {/* Scroll to the bottom */}
+              <div ref={messagesEndRef} />
             </div>
             <div className="flex">
               <input

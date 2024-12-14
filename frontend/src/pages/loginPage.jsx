@@ -29,7 +29,7 @@ const LoginPage = () => {
         sessionStorage.setItem("userId", userId);
         sessionStorage.setItem("username", userName);
 
-        navigate("/chats");
+        navigate("/AllChats");
       } else {
         const errorText = await response.text();
         setErrorMessage(errorText || "Login failed");

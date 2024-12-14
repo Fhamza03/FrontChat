@@ -1,16 +1,17 @@
-import { Routes, Route } from "react-router-dom";  // Use only Routes and Route
+import { Route, Routes } from "react-router-dom"; // Use only Routes and Route
 import "./App.css";
-import Chats from "./pages/ChatPage";
+import AllChats from "./components/AllChats";
+import ChatPage from "./pages/ChatPage";  // Updated import name to match the file
 import Login from "./pages/loginPage";
 
 function App() {
   return (
     <div className="App">
       <Routes>
-        {/* Define route for Login */}
         <Route path="/" element={<Login />} />
-        {/* Define route for Chat */}
-        <Route path="/chats" element={<Chats />} />
+        {/* Updated route to include dynamic chatId */}
+        <Route path="/MessagesChat/:chatId" element={<ChatPage />} /> 
+        <Route path="/AllChats" element={<AllChats />} />
       </Routes>
     </div>
   );
