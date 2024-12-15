@@ -20,7 +20,6 @@ const CreateGroup = () => {
           throw new Error("Failed to fetch users");
         }
         const data = await response.json();
-        console.log(data);
         setUsers(data);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -86,7 +85,6 @@ const CreateGroup = () => {
       }
   
       const createdGroup = await response.json();
-      console.log("Group created successfully:", createdGroup);
   
       // Step 2: Add the current user to the group
       const addCurrentUserResponse = await fetch(
@@ -99,7 +97,6 @@ const CreateGroup = () => {
       if (!addCurrentUserResponse.ok) {
         throw new Error(`Failed to add the current user to the group`);
       }
-      console.log(`User with ID ${currentUserId} added to the group`);
   
       // Step 3: Add other users to the group
       for (const user of userList) {
