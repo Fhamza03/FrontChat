@@ -17,7 +17,7 @@ const SideBar = () => {
           {/* Chat */}
           <li>
             <Link
-              to="/chats"
+              to="/AllChats"
               className="text-black flex items-center p-2 rounded hover:bg-gray-700  "
             >
               <svg
@@ -88,7 +88,7 @@ const SideBar = () => {
               <ul className="pl-6 space-y-2 mt-2">
                 <li>
                   <Link
-                    to="/groups"
+                    to="/GroupList"
                     className="text-black flex items-center p-2 rounded hover:bg-gray-700"
                   >
                     <svg

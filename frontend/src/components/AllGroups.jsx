@@ -1,25 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";  // Import useNavigate
-import SideBar from "./SideBar";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import Header from "./Header";
+import SideBar from "./SideBar";
 
-const AllChats = () => {
-  const [chats, setChats] = useState([]);
+const AllGroups = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();  // Initialize useNavigate hook
-  const userId = sessionStorage.getItem("userId");
+  const [groups, setGroups] = useState([]);
+  const navigate = useNavigate(); // Initialize useNavigate hook
 
+  // Fetch groups when the component mounts
   useEffect(() => {
-    // Fetch chat data from the backend
-    const fetchChats = async () => {
+    const userId = sessionStorage.getItem("userId");
+
+    const fetchGroups = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/getAllChats/${userId}`);
+        const response = await fetch(
+          `http://localhost:8080/AllGroups/${userId}`
+        );
+
         if (!response.ok) {
-          throw new Error("Failed to fetch chats");
+          throw new Error("Failed to fetch groups");
         }
+
         const data = await response.json();
-        setChats(data);
+        setGroups(data);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -27,11 +32,11 @@ const AllChats = () => {
       }
     };
 
-    fetchChats();
+    fetchGroups();
   }, []);
 
-  const handleChatClick = (chatId) => {
-    // Navigate to the MessagesChat route with the chat_id
+  const handleGroupClick = (chatId) => {
+    // Navigate to the group chat page using the groupId in the URL
     navigate(`/MessagesChat/${chatId}`);
   };
 
@@ -45,15 +50,15 @@ const AllChats = () => {
         {/* Main Section */}
         <div className="p-4 space-y-4">
           {loading ? (
-            <p>Loading chats...</p>
+            <p>Loading groups...</p>
           ) : error ? (
             <p className="text-red-500">{error}</p>
-          ) : chats.length > 0 ? (
-            chats.map((chat, index) => (
+          ) : groups.length > 0 ? (
+            groups.map((group, index) => (
               <div
                 key={index}
                 className="flex items-center space-x-4 p-4 bg-white shadow-md rounded-lg"
-                onClick={() => handleChatClick(chat.chat_id)}  // Add click handler
+                onClick={() => handleGroupClick(group.chatId)} // Trigger navigation on click
               >
                 {/* Placeholder Avatar */}
                 <img
@@ -61,19 +66,24 @@ const AllChats = () => {
                   alt="Avatar"
                   className="w-20 h-20 rounded-full"
                 />
-                {/* Chat Info */}
-                <div className="">
+                {/* Group Info */}
+                <div>
                   <h3 className="font-semibold text-gray-800 flex justify-start">
-                    {chat.friend_username}
+                    {group.name}
                   </h3>
                   <p className="text-sm text-gray-600 flex justify-start">
-                    Message
+                    Role: {group.role}{" "}
+                    {/* Displaying the user's role in the group */}
+                  </p>
+                  <p className="text-sm text-gray-600 flex justify-start">
+                    Date Joined:{" "}
+                    {new Date(group.dateJoined).toLocaleDateString()}
                   </p>
                 </div>
               </div>
             ))
           ) : (
-            <p>No chats found</p>
+            <p>No groups found</p>
           )}
         </div>
       </div>
@@ -81,4 +91,4 @@ const AllChats = () => {
   );
 };
 
-export default AllChats;
+export default AllGroups;
