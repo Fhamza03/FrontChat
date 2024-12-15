@@ -41,7 +41,7 @@ const AllGroups = () => {
   };
 
   return (
-    <div className="h-screen flex">
+    <div className="h-screen flex bg-[#DBE2EF]">
       <SideBar />
       <div className="flex flex-col flex-grow">
         {/* Header */}

@@ -111,7 +111,7 @@ const SideBar = () => {
                 </li>
                 <li>
                   <Link
-                    to="/create-group"
+                    to="/CreateGroup"
                     className="text-black flex items-center p-2 rounded hover:bg-gray-700"
                   >
                     <svg
