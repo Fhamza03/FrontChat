@@ -251,7 +251,6 @@ const SideBar = () => {
           </li>
         </ul>
       </nav>
-      <div className="text-black p-4 border-t border-gray-700">Logout</div>
     </aside>
   );
 };
