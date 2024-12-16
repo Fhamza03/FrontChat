@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "./Header";
 import SideBar from "./SideBar";
 
@@ -15,7 +15,9 @@ const CreateGroup = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/getFriends/${userId}`);
+        const response = await fetch(
+          `http://localhost:8080/getFriends/${userId}`
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch users");
         }
@@ -31,8 +33,8 @@ const CreateGroup = () => {
 
   // Filter users based on search term
   const filteredUsers = searchTerm
-    ? users.filter((user) =>
-        user.userName.toLowerCase().includes(searchTerm.toLowerCase()) // Use `userName` instead of `username`
+    ? users.filter(
+        (user) => user.userName.toLowerCase().includes(searchTerm.toLowerCase()) // Use `userName` instead of `username`
       )
     : users;
 
@@ -52,25 +54,25 @@ const CreateGroup = () => {
   // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!groupName || userList.length === 0) {
       alert("Please fill out all fields and add at least one user");
       return;
     }
-  
+
     // Prepare the group data
     const groupData = {
       name: groupName,
       userGroups: userList.map((user) => ({
-        userId: user.userId,  // Ensure the user ID is sent for each user
+        userId: user.userId, // Ensure the user ID is sent for each user
       })),
     };
-  
+
     const currentUserId = sessionStorage.getItem("userId"); // Get the current user from session
-  
+
     try {
       setLoading(true); // Set loading state while waiting for the response
-  
+
       // Step 1: Create the group
       const response = await fetch("http://localhost:8080/CreateGroupe", {
         method: "POST",
@@ -79,13 +81,13 @@ const CreateGroup = () => {
         },
         body: JSON.stringify(groupData),
       });
-  
+
       if (!response.ok) {
         throw new Error("Failed to create group");
       }
-  
+
       const createdGroup = await response.json();
-  
+
       // Step 2: Add the current user to the group
       const addCurrentUserResponse = await fetch(
         `http://localhost:8080/addUserToGroup/${createdGroup.groupId}/${currentUserId}`,
@@ -93,11 +95,11 @@ const CreateGroup = () => {
           method: "POST",
         }
       );
-  
+
       if (!addCurrentUserResponse.ok) {
         throw new Error(`Failed to add the current user to the group`);
       }
-  
+
       // Step 3: Add other users to the group
       for (const user of userList) {
         const addUserResponse = await fetch(
@@ -106,13 +108,13 @@ const CreateGroup = () => {
             method: "POST",
           }
         );
-  
+
         if (!addUserResponse.ok) {
           throw new Error(`Failed to add user ${user.username} to the group`);
         }
         console.log(`User ${user.username} added to the group`);
       }
-  
+
       // Step 4: Change the role of the current user
       const changeRoleResponse = await fetch(
         `http://localhost:8080/changeRole/${currentUserId}/${createdGroup.groupId}`,
@@ -120,15 +122,15 @@ const CreateGroup = () => {
           method: "PUT",
         }
       );
-  
+
       if (!changeRoleResponse.ok) {
         throw new Error(`Failed to change the role of the current user`);
       }
-  
+
       console.log(`Role of the current user changed`);
-  
+
       alert("Group created and users added successfully, role updated!");
-  
+
       // Optionally, reset form state if needed
       setGroupName("");
       setUserList([]);
@@ -139,7 +141,6 @@ const CreateGroup = () => {
       setLoading(false); // Reset loading state
     }
   };
-  
 
   return (
     <div className="h-screen flex bg-[#DBE2EF]">
@@ -199,7 +200,8 @@ const CreateGroup = () => {
                           onClick={() => handleAddUser(user)}
                           className="p-2 hover:bg-gray-200 cursor-pointer text-left"
                         >
-                          {user.userName} {/* Use `user.userName` for display */}
+                          {user.userName}{" "}
+                          {/* Use `user.userName` for display */}
                         </li>
                       ))}
                     </ul>
@@ -219,7 +221,8 @@ const CreateGroup = () => {
                         key={user.userId} // Use `user.userId` for a unique key
                         className="flex items-center justify-between border-b border-gray-300 py-2"
                       >
-                        <span>{user.userName}</span> {/* Use `user.userName` for display */}
+                        <span>{user.userName}</span>{" "}
+                        {/* Use `user.userName` for display */}
                         <button
                           onClick={() => handleRemoveUser(user.userId)}
                           className="py-2 px-5 text-red-500"

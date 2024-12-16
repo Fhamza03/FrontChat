@@ -5,6 +5,9 @@ import ChatPage from "./pages/ChatPage"; // Updated import name to match the fil
 import Login from "./pages/loginPage";
 import AllGroups from "./components/AllGroups";
 import CreateGroup from "./components/CreateGroup";
+import AllFriends from "./components/AllFriends";
+import SearchFriends from "./components/SearchFriends";
+import Notifications from "./components/Notifications";
 
 function App() {
   return (
@@ -16,6 +19,10 @@ function App() {
         <Route path="/AllChats" element={<AllChats />} />
         <Route path="/GroupList" element={<AllGroups />} />
         <Route path="/CreateGroup" element={<CreateGroup />} />
+        <Route path="/friendsList" element={<AllFriends />} />
+        <Route path="/SearchFriends" element={<SearchFriends />} />
+        <Route path="/Notifications" element={<Notifications />} />
+
 
       </Routes>
     </div>

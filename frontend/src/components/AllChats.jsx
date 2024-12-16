@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"; 
 import { useNavigate } from "react-router-dom";  // Import useNavigate
 import SideBar from "./SideBar";
 import Header from "./Header";
@@ -28,7 +28,7 @@ const AllChats = () => {
     };
 
     fetchChats();
-  }, []);
+  }, [userId]);
 
   const handleChatClick = (chatId) => {
     // Navigate to the MessagesChat route with the chat_id
@@ -64,10 +64,10 @@ const AllChats = () => {
                 {/* Chat Info */}
                 <div className="">
                   <h3 className="font-semibold text-gray-800 flex justify-start">
-                    {chat.friend_username}
+                    {chat.username}  {/* Display username */}
                   </h3>
                   <p className="text-sm text-gray-600 flex justify-start">
-                    Message
+                    {chat.first_name} {chat.last_name}  {/* Display first and last name */}
                   </p>
                 </div>
               </div>

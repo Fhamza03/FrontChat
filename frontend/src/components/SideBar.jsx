@@ -180,7 +180,7 @@ const SideBar = () => {
               <ul className="pl-6 space-y-2 mt-2">
                 <li>
                   <Link
-                    to="/friends"
+                    to="/friendsList"
                     className="text-black flex items-center p-2 rounded hover:bg-gray-700"
                   >
                     <svg
@@ -203,7 +203,7 @@ const SideBar = () => {
                 </li>
                 <li>
                   <Link
-                    to="/search-friends"
+                    to="/SearchFriends"
                     className="text-black flex items-center p-2 rounded hover:bg-gray-700"
                   >
                     <svg
@@ -222,7 +222,7 @@ const SideBar = () => {
                         clipRule="evenodd"
                       />
                     </svg>
-                    Search Friends
+                    Add Friends
                   </Link>
                 </li>
               </ul>
@@ -232,7 +232,7 @@ const SideBar = () => {
           {/* Notifications */}
           <li>
             <Link
-              to="/notifications"
+              to="/Notifications"
               className="text-black flex items-center p-2 rounded hover:bg-[gray-700]"
             >
               <svg
