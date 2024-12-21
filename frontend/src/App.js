@@ -8,6 +8,9 @@ import CreateGroup from "./components/CreateGroup";
 import AllFriends from "./components/AllFriends";
 import SearchFriends from "./components/SearchFriends";
 import Notifications from "./components/Notifications";
+import SignUp from "./pages/SignUp";
+import EmailVerification from "./components/EmailVerification";
+import VerificationPage from "./pages/VerificationPage";
 
 function App() {
   return (
@@ -22,6 +25,10 @@ function App() {
         <Route path="/friendsList" element={<AllFriends />} />
         <Route path="/SearchFriends" element={<SearchFriends />} />
         <Route path="/Notifications" element={<Notifications />} />
+        <Route path="/Signup" element={<SignUp />} />
+        <Route path="/verifyEmail" element={<EmailVerification />} />
+        <Route path="/verify" element={<VerificationPage />} />
+
 
 
       </Routes>

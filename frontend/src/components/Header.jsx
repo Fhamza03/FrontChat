@@ -1,16 +1,36 @@
-import React ,{useState} from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
-  const userLoggedIn = sessionStorage.getItem("username");
+  const [userLoggedIn, setUserLoggedIn] = useState(
+    sessionStorage.getItem("username")
+  );
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
 
-  const handleLogOut = () => {
-    // Implement your logout functionality here
-    console.log("Logged out");
+  const handleLogOut = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: sessionStorage.getItem("userId") }),
+      });
+
+      if (response.ok) {
+        sessionStorage.clear(); // Clear all session storage
+        console.log("Logged out successfully");
+        setUserLoggedIn(null); // Update state
+        navigate("/"); // Redirect to home
+      } else {
+        console.error("Failed to log out");
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   };
 
   return (
@@ -52,7 +72,7 @@ const Header = () => {
                 </li>
                 <li>
                   <button
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
+                    className="block px-4 py-2 text-sm"
                     onClick={handleLogOut}
                   >
                     Log Out

@@ -2,8 +2,8 @@ import { Client } from "@stomp/stompjs";
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import SockJS from "sockjs-client";
-import SideBar from "../components/SideBar";
 import Header from "../components/Header";
+import SideBar from "../components/SideBar";
 
 const ChatPage = () => {
   const { chatId } = useParams(); // Retrieve chatId from the URL
@@ -119,7 +119,6 @@ const ChatPage = () => {
     }
   };
 
-  
   return (
     <div className="h-screen flex">
       {/* Side bar */}

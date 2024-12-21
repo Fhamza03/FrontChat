@@ -7,6 +7,7 @@ const AllGroups = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [groups, setGroups] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(""); // State for search term
   const navigate = useNavigate(); // Initialize useNavigate hook
 
   // Fetch groups when the component mounts
@@ -40,6 +41,13 @@ const AllGroups = () => {
     navigate(`/MessagesChat/${chatId}`);
   };
 
+  // Handle search functionality
+  const filteredGroups = groups
+    .filter((group) =>
+      group.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .slice(0, 4); // Slice to display only 5 results
+
   return (
     <div className="h-screen flex bg-[#DBE2EF]">
       <SideBar />
@@ -47,14 +55,25 @@ const AllGroups = () => {
         {/* Header */}
         <Header />
 
+        {/* Search Input */}
+        <div className="p-4">
+          <input
+            type="text"
+            placeholder="Search by group name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
+          />
+        </div>
+
         {/* Main Section */}
         <div className="p-4 space-y-4">
           {loading ? (
             <p>Loading groups...</p>
           ) : error ? (
             <p className="text-red-500">{error}</p>
-          ) : groups.length > 0 ? (
-            groups.map((group, index) => (
+          ) : filteredGroups.length > 0 ? (
+            filteredGroups.map((group, index) => (
               <div
                 key={index}
                 className="flex items-center space-x-4 p-4 bg-white shadow-md rounded-lg"
@@ -76,7 +95,7 @@ const AllGroups = () => {
                     {/* Displaying the user's role in the group */}
                   </p>
                   <p className="text-sm text-gray-600 flex justify-start">
-                    Date Joined:{" "}
+                    Date Joined: {" "}
                     {new Date(group.dateJoined).toLocaleDateString()}
                   </p>
                 </div>
